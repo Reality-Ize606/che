@@ -8,7 +8,7 @@
  * Contributors:
  *   Red Hat, Inc. - initial API and implementation
  */
-package org.eclipse.che.multiuser.resource.api.license;
+package org.eclipse.che.multiuser.resource.api;
 
 import java.util.List;
 import org.eclipse.che.api.core.NotFoundException;

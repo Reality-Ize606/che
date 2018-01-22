@@ -12,7 +12,6 @@ package org.eclipse.che.multiuser.resource.api.usage;
 
 import static com.jayway.restassured.RestAssured.given;
 import static java.util.Collections.singletonList;
-import static java.util.stream.Collectors.toList;
 import static org.everrest.assured.JettyHttpServer.ADMIN_USER_NAME;
 import static org.everrest.assured.JettyHttpServer.ADMIN_USER_PASSWORD;
 import static org.everrest.assured.JettyHttpServer.SECURE_PATH;
@@ -24,10 +23,14 @@ import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
 
 import com.jayway.restassured.response.Response;
+import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.che.api.core.rest.ApiExceptionMapper;
 import org.eclipse.che.dto.server.DtoFactory;
+import org.eclipse.che.multiuser.resource.shared.dto.ProvidedResourcesDto;
+import org.eclipse.che.multiuser.resource.shared.dto.ResourceDetailsDto;
 import org.eclipse.che.multiuser.resource.shared.dto.ResourceDto;
+import org.eclipse.che.multiuser.resource.spi.impl.ResourceDetailsImpl;
 import org.eclipse.che.multiuser.resource.spi.impl.ResourceImpl;
 import org.everrest.assured.EverrestJetty;
 import org.mockito.InjectMocks;
@@ -130,10 +133,49 @@ public class ResourceUsageServiceTest {
     assertEquals(fetchedResource.getUnit(), RESOURCE_UNIT);
   }
 
+  @Test
+  public void testGetsResourceDetails() throws Exception {
+    // given
+    final ResourceDto testResource =
+        DtoFactory.newDto(ResourceDto.class).withType("test").withAmount(1234).withUnit("mb");
+    final ResourceDetailsDto toFetch =
+        DtoFactory.newDto(ResourceDetailsDto.class)
+            .withAccountId("account123")
+            .withProvidedResources(
+                singletonList(
+                    DtoFactory.newDto(ProvidedResourcesDto.class)
+                        .withId("resource123")
+                        .withProviderId("provider")
+                        .withOwner("account123")
+                        .withStartTime(123L)
+                        .withEndTime(321L)
+                        .withResources(singletonList(testResource))))
+            .withTotalResources(singletonList(testResource));
+
+    // when
+    when(resourceUsageManager.getByAccount(eq("account123")))
+        .thenReturn(new ResourceDetailsImpl(toFetch));
+
+    // then
+    final Response response =
+        given()
+            .auth()
+            .basic(ADMIN_USER_NAME, ADMIN_USER_PASSWORD)
+            .contentType("application/json")
+            .when()
+            .expect()
+            .statusCode(200)
+            .get(SECURE_PATH + "/resource/details/account123");
+
+    final ResourceDetailsDto resourceDetailsDto =
+        DtoFactory.getInstance()
+            .createDtoFromJson(response.body().print(), ResourceDetailsDto.class);
+    assertEquals(resourceDetailsDto, toFetch);
+    verify(resourceUsageManager).getByAccount("account123");
+  }
+
   private static <T> List<T> unwrapDtoList(Response response, Class<T> dtoClass) {
-    return DtoFactory.getInstance()
-        .createListDtoFromJson(response.body().print(), dtoClass)
-        .stream()
-        .collect(toList());
+    return new ArrayList<>(
+        DtoFactory.getInstance().createListDtoFromJson(response.body().print(), dtoClass));
   }
 }

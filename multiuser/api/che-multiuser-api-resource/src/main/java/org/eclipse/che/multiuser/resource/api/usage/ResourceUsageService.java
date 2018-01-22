@@ -11,6 +11,7 @@
 package org.eclipse.che.multiuser.resource.api.usage;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static org.eclipse.che.multiuser.resource.api.DtoConverter.asDto;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -29,6 +30,7 @@ import org.eclipse.che.api.core.NotFoundException;
 import org.eclipse.che.api.core.ServerException;
 import org.eclipse.che.api.core.rest.Service;
 import org.eclipse.che.multiuser.resource.api.DtoConverter;
+import org.eclipse.che.multiuser.resource.shared.dto.ResourceDetailsDto;
 import org.eclipse.che.multiuser.resource.shared.dto.ResourceDto;
 
 /**
@@ -39,6 +41,7 @@ import org.eclipse.che.multiuser.resource.shared.dto.ResourceDto;
 @Api(value = "/resource", description = "Resource REST API")
 @Path("/resource")
 public class ResourceUsageService extends Service {
+
   private final ResourceUsageManager resourceUsageManager;
 
   @Inject
@@ -111,5 +114,23 @@ public class ResourceUsageService extends Service {
         .stream()
         .map(DtoConverter::asDto)
         .collect(Collectors.toList());
+  }
+
+  @GET
+  @Path("details/{accountId}")
+  @Produces(APPLICATION_JSON)
+  @ApiOperation(
+    value = "Get resource details for given account",
+    response = ResourceDetailsDto.class
+  )
+  @ApiResponses({
+    @ApiResponse(code = 200, message = "The resource details successfully fetched"),
+    @ApiResponse(code = 404, message = "Account with specified id was not found"),
+    @ApiResponse(code = 500, message = "Internal server error occurred")
+  })
+  public ResourceDetailsDto getResourceDetails(
+      @ApiParam("Account id") @PathParam("accountId") String accountId)
+      throws NotFoundException, ServerException {
+    return asDto(resourceUsageManager.getByAccount(accountId));
   }
 }

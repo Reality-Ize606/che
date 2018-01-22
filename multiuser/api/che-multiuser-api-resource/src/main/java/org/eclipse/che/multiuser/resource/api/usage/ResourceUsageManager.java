@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.eclipse.che.account.api.AccountManager;
@@ -24,9 +25,12 @@ import org.eclipse.che.api.core.ServerException;
 import org.eclipse.che.multiuser.resource.api.AvailableResourcesProvider;
 import org.eclipse.che.multiuser.resource.api.ResourceAggregator;
 import org.eclipse.che.multiuser.resource.api.ResourceUsageTracker;
+import org.eclipse.che.multiuser.resource.api.ResourcesProvider;
 import org.eclipse.che.multiuser.resource.api.exception.NoEnoughResourcesException;
-import org.eclipse.che.multiuser.resource.api.license.AccountLicenseManager;
+import org.eclipse.che.multiuser.resource.model.ProvidedResources;
 import org.eclipse.che.multiuser.resource.model.Resource;
+import org.eclipse.che.multiuser.resource.model.ResourceDetails;
+import org.eclipse.che.multiuser.resource.spi.impl.ResourceDetailsImpl;
 
 /**
  * Facade for resources using related operations.
@@ -36,25 +40,25 @@ import org.eclipse.che.multiuser.resource.model.Resource;
 @Singleton
 public class ResourceUsageManager {
   private final ResourceAggregator resourceAggregator;
+  private final Set<ResourcesProvider> resourcesProviders;
   private final Set<ResourceUsageTracker> usageTrackers;
   private final AccountManager accountManager;
-  private final AccountLicenseManager accountLicenseManager;
   private final Map<String, AvailableResourcesProvider> accountTypeToAvailableResourcesProvider;
   private final DefaultAvailableResourcesProvider defaultAvailableResourcesProvider;
 
   @Inject
   public ResourceUsageManager(
       ResourceAggregator resourceAggregator,
+      Set<ResourcesProvider> resourcesProviders,
       Set<ResourceUsageTracker> usageTrackers,
       AccountManager accountManager,
       Map<String, AvailableResourcesProvider> accountTypeToAvailableResourcesProvider,
-      AccountLicenseManager accountLicenseManager,
       DefaultAvailableResourcesProvider defaultAvailableResourcesProvider) {
     this.resourceAggregator = resourceAggregator;
+    this.resourcesProviders = resourcesProviders;
     this.usageTrackers = usageTrackers;
     this.accountManager = accountManager;
     this.accountTypeToAvailableResourcesProvider = accountTypeToAvailableResourcesProvider;
-    this.accountLicenseManager = accountLicenseManager;
     this.defaultAvailableResourcesProvider = defaultAvailableResourcesProvider;
   }
 
@@ -68,7 +72,7 @@ public class ResourceUsageManager {
    */
   public List<? extends Resource> getTotalResources(String accountId)
       throws NotFoundException, ServerException {
-    return accountLicenseManager.getByAccount(accountId).getTotalResources();
+    return getByAccount(accountId).getTotalResources();
   }
 
   /**
@@ -124,5 +128,31 @@ public class ResourceUsageManager {
     List<? extends Resource> availableResources = getAvailableResources(accountId);
     // check resources availability
     resourceAggregator.deduct(availableResources, resources);
+  }
+
+  /**
+   * Returns detailed information about resources which given account can use.
+   *
+   * @param accountId account id
+   * @return detailed information about resources which can be used by given account
+   * @throws NotFoundException when account with specified id was not found
+   * @throws ServerException when some exception occurs
+   */
+  public ResourceDetails getByAccount(String accountId) throws NotFoundException, ServerException {
+    final List<ProvidedResources> resources = new ArrayList<>();
+    for (ResourcesProvider resourcesProvider : resourcesProviders) {
+      resources.addAll(resourcesProvider.getResources(accountId));
+    }
+
+    final List<Resource> allResources =
+        resources
+            .stream()
+            .flatMap(providedResources -> providedResources.getResources().stream())
+            .collect(Collectors.toList());
+
+    return new ResourceDetailsImpl(
+        accountId,
+        resources,
+        new ArrayList<>(resourceAggregator.aggregateByType(allResources).values()));
   }
 }
