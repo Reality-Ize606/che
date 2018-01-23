@@ -228,7 +228,7 @@ public interface Resources
 
     String mainText();
 
-    // wizard's treeStylesCss
+    // wizard's styles
     String mainFont();
 
     String mainBoldFont();
