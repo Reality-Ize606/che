@@ -104,7 +104,7 @@ public class ResourceServicePermissionsFilterTest {
     assertTrue(collect.contains(ResourceServicePermissionsFilter.GET_TOTAL_RESOURCES_METHOD));
     assertTrue(collect.contains(ResourceServicePermissionsFilter.GET_AVAILABLE_RESOURCES_METHOD));
     assertTrue(collect.contains(ResourceServicePermissionsFilter.GET_USED_RESOURCES_METHOD));
-    assertTrue(collect.contains(ResourceServicePermissionsFilter.GET_LICENSE_METHOD));
+    assertTrue(collect.contains(ResourceServicePermissionsFilter.GET_RESOURCES_DETAILS_METHOD));
   }
 
   @Test
@@ -210,7 +210,7 @@ public class ResourceServicePermissionsFilterTest {
   }
 
   @Test
-  public void shouldCheckPermissionsOnGettingLicense() throws Exception {
+  public void testChecksPermissionsOnGettingResourcesDetails() throws Exception {
     given()
         .auth()
         .basic(ADMIN_USER_NAME, ADMIN_USER_PASSWORD)
@@ -224,7 +224,7 @@ public class ResourceServicePermissionsFilterTest {
   }
 
   @Test(dataProvider = "coveredPaths")
-  public void shouldDenyRequestWhenUserDoesNotHasPermissionsToSeeLicense(String path)
+  public void testDeniesRequestWhenUserDoesNotHasPermissionsToSeeResourcesDetails(String path)
       throws Exception {
     doThrow(new ForbiddenException("Forbidden")).when(checker).checkPermissions(anyString(), any());
 
@@ -240,8 +240,8 @@ public class ResourceServicePermissionsFilterTest {
   }
 
   @Test(dataProvider = "coveredPaths")
-  public void shouldDenyRequestThereIsNotPermissionCheckerWhenUserDoesNotHasPermissionsToSeeLicense(
-      String path) throws Exception {
+  public void testDeniesRequestWhenUserDoesNotHasPermissionsToSeeResourceDetails(String path)
+      throws Exception {
     when(account.getType()).thenReturn("unknown");
 
     given()
