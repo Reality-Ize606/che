@@ -27,21 +27,21 @@ import org.eclipse.che.everrest.CheMethodInvokerFilter;
 import org.eclipse.che.multiuser.api.permission.server.SystemDomain;
 import org.eclipse.che.multiuser.api.permission.server.account.AccountOperation;
 import org.eclipse.che.multiuser.api.permission.server.account.AccountPermissionsChecker;
-import org.eclipse.che.multiuser.resource.api.usage.ResourceUsageService;
+import org.eclipse.che.multiuser.resource.api.usage.ResourceService;
 import org.everrest.core.Filter;
 import org.everrest.core.resource.GenericResourceMethod;
 
 /**
- * Restricts access to methods of {@link ResourceUsageService} by users' permissions.
+ * Restricts access to methods of {@link ResourceService} by users' permissions.
  *
- * <p>Filter contains rules for protecting of all methods of {@link ResourceUsageService}.<br>
+ * <p>Filter contains rules for protecting of all methods of {@link ResourceService}.<br>
  * In case when requested method is unknown filter throws {@link ForbiddenException}
  *
  * @author Sergii Leschenko
  */
 @Filter
 @Path("/resource{path:(?!/free)(/.*)?}")
-public class ResourceUsageServicePermissionsFilter extends CheMethodInvokerFilter {
+public class ResourceServicePermissionsFilter extends CheMethodInvokerFilter {
   static final String GET_TOTAL_RESOURCES_METHOD = "getTotalResources";
   static final String GET_AVAILABLE_RESOURCES_METHOD = "getAvailableResources";
   static final String GET_USED_RESOURCES_METHOD = "getUsedResources";
@@ -51,7 +51,7 @@ public class ResourceUsageServicePermissionsFilter extends CheMethodInvokerFilte
   private final Map<String, AccountPermissionsChecker> permissionsCheckers;
 
   @Inject
-  public ResourceUsageServicePermissionsFilter(
+  public ResourceServicePermissionsFilter(
       AccountManager accountManager, Set<AccountPermissionsChecker> permissionsCheckers) {
     this.accountManager = accountManager;
     this.permissionsCheckers =

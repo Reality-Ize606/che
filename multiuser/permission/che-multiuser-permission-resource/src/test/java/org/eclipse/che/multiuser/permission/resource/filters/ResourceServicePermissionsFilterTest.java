@@ -41,7 +41,7 @@ import org.eclipse.che.multiuser.api.permission.server.SystemDomain;
 import org.eclipse.che.multiuser.api.permission.server.account.AccountOperation;
 import org.eclipse.che.multiuser.api.permission.server.account.AccountPermissionsChecker;
 import org.eclipse.che.multiuser.resource.api.free.FreeResourcesLimitService;
-import org.eclipse.che.multiuser.resource.api.usage.ResourceUsageService;
+import org.eclipse.che.multiuser.resource.api.usage.ResourceService;
 import org.everrest.assured.EverrestJetty;
 import org.everrest.core.Filter;
 import org.everrest.core.GenericContainerRequest;
@@ -54,12 +54,12 @@ import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
 /**
- * Tests for {@link ResourceUsageServicePermissionsFilter}
+ * Tests for {@link ResourceServicePermissionsFilter}
  *
  * @author Sergii Leschenko
  */
 @Listeners(value = {MockitoTestNGListener.class, EverrestJetty.class})
-public class ResourceUsageServicePermissionsFilterTest {
+public class ResourceServicePermissionsFilterTest {
   @SuppressWarnings("unused")
   private static final ApiExceptionMapper MAPPER = new ApiExceptionMapper();
 
@@ -70,7 +70,7 @@ public class ResourceUsageServicePermissionsFilterTest {
 
   @Mock private Account account;
 
-  @Mock private ResourceUsageService service;
+  @Mock private ResourceService service;
 
   @Mock private FreeResourcesLimitService freeResourcesLimitService;
 
@@ -78,7 +78,7 @@ public class ResourceUsageServicePermissionsFilterTest {
 
   @Mock private AccountPermissionsChecker checker;
 
-  private ResourceUsageServicePermissionsFilter filter;
+  private ResourceServicePermissionsFilter filter;
 
   @BeforeMethod
   public void setUp() throws Exception {
@@ -87,25 +87,24 @@ public class ResourceUsageServicePermissionsFilterTest {
     when(account.getType()).thenReturn("test");
     when(checker.getAccountType()).thenReturn("test");
 
-    filter = new ResourceUsageServicePermissionsFilter(accountManager, ImmutableSet.of(checker));
+    filter = new ResourceServicePermissionsFilter(accountManager, ImmutableSet.of(checker));
   }
 
   @Test
   public void shouldTestThatAllPublicMethodsAreCoveredByPermissionsFilter() throws Exception {
     // given
     final List<String> collect =
-        Stream.of(ResourceUsageService.class.getDeclaredMethods())
+        Stream.of(ResourceService.class.getDeclaredMethods())
             .filter(method -> Modifier.isPublic(method.getModifiers()))
             .map(Method::getName)
             .collect(Collectors.toList());
 
     // then
     assertEquals(collect.size(), 4);
-    assertTrue(collect.contains(ResourceUsageServicePermissionsFilter.GET_TOTAL_RESOURCES_METHOD));
-    assertTrue(
-        collect.contains(ResourceUsageServicePermissionsFilter.GET_AVAILABLE_RESOURCES_METHOD));
-    assertTrue(collect.contains(ResourceUsageServicePermissionsFilter.GET_USED_RESOURCES_METHOD));
-    assertTrue(collect.contains(ResourceUsageServicePermissionsFilter.GET_LICENSE_METHOD));
+    assertTrue(collect.contains(ResourceServicePermissionsFilter.GET_TOTAL_RESOURCES_METHOD));
+    assertTrue(collect.contains(ResourceServicePermissionsFilter.GET_AVAILABLE_RESOURCES_METHOD));
+    assertTrue(collect.contains(ResourceServicePermissionsFilter.GET_USED_RESOURCES_METHOD));
+    assertTrue(collect.contains(ResourceServicePermissionsFilter.GET_LICENSE_METHOD));
   }
 
   @Test

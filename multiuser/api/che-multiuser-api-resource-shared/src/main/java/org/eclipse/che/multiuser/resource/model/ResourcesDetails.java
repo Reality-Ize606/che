@@ -18,7 +18,7 @@ import java.util.List;
  * @author gazarenkov
  * @author Sergii Leschenko
  */
-public interface ResourceDetails {
+public interface ResourcesDetails {
   /** Returns id of account that is owner of this license. */
   String getAccountId();
 

@@ -15,11 +15,11 @@ import org.eclipse.che.dto.server.DtoFactory;
 import org.eclipse.che.multiuser.resource.model.FreeResourcesLimit;
 import org.eclipse.che.multiuser.resource.model.ProvidedResources;
 import org.eclipse.che.multiuser.resource.model.Resource;
-import org.eclipse.che.multiuser.resource.model.ResourceDetails;
+import org.eclipse.che.multiuser.resource.model.ResourcesDetails;
 import org.eclipse.che.multiuser.resource.shared.dto.FreeResourcesLimitDto;
 import org.eclipse.che.multiuser.resource.shared.dto.ProvidedResourcesDto;
-import org.eclipse.che.multiuser.resource.shared.dto.ResourceDetailsDto;
 import org.eclipse.che.multiuser.resource.shared.dto.ResourceDto;
+import org.eclipse.che.multiuser.resource.shared.dto.ResourcesDetailsDto;
 
 /**
  * Helps to convert objects related to resource to DTOs.
@@ -43,17 +43,17 @@ public final class DtoConverter {
         .withAccountId(limit.getAccountId());
   }
 
-  public static ResourceDetailsDto asDto(ResourceDetails resourceDetails) {
-    return DtoFactory.newDto(ResourceDetailsDto.class)
-        .withAccountId(resourceDetails.getAccountId())
+  public static ResourcesDetailsDto asDto(ResourcesDetails resourcesDetails) {
+    return DtoFactory.newDto(ResourcesDetailsDto.class)
+        .withAccountId(resourcesDetails.getAccountId())
         .withTotalResources(
-            resourceDetails
+            resourcesDetails
                 .getTotalResources()
                 .stream()
                 .map(DtoConverter::asDto)
                 .collect(Collectors.toList()))
         .withProvidedResources(
-            resourceDetails
+            resourcesDetails
                 .getProvidedResources()
                 .stream()
                 .map(DtoConverter::asDto)

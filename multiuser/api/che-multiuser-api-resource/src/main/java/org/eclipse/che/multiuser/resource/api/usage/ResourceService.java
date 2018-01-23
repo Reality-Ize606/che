@@ -30,8 +30,8 @@ import org.eclipse.che.api.core.NotFoundException;
 import org.eclipse.che.api.core.ServerException;
 import org.eclipse.che.api.core.rest.Service;
 import org.eclipse.che.multiuser.resource.api.DtoConverter;
-import org.eclipse.che.multiuser.resource.shared.dto.ResourceDetailsDto;
 import org.eclipse.che.multiuser.resource.shared.dto.ResourceDto;
+import org.eclipse.che.multiuser.resource.shared.dto.ResourcesDetailsDto;
 
 /**
  * Defines Resource REST API.
@@ -40,13 +40,13 @@ import org.eclipse.che.multiuser.resource.shared.dto.ResourceDto;
  */
 @Api(value = "/resource", description = "Resource REST API")
 @Path("/resource")
-public class ResourceUsageService extends Service {
+public class ResourceService extends Service {
 
-  private final ResourceUsageManager resourceUsageManager;
+  private final ResourceManager resourceManager;
 
   @Inject
-  public ResourceUsageService(ResourceUsageManager resourceUsageManager) {
-    this.resourceUsageManager = resourceUsageManager;
+  public ResourceService(ResourceManager resourceManager) {
+    this.resourceManager = resourceManager;
   }
 
   @GET
@@ -65,7 +65,7 @@ public class ResourceUsageService extends Service {
   public List<ResourceDto> getTotalResources(
       @ApiParam("Account id") @PathParam("accountId") String accountId)
       throws NotFoundException, ServerException, ConflictException {
-    return resourceUsageManager
+    return resourceManager
         .getTotalResources(accountId)
         .stream()
         .map(DtoConverter::asDto)
@@ -87,7 +87,7 @@ public class ResourceUsageService extends Service {
   })
   public List<ResourceDto> getAvailableResources(@PathParam("accountId") String accountId)
       throws NotFoundException, ServerException {
-    return resourceUsageManager
+    return resourceManager
         .getAvailableResources(accountId)
         .stream()
         .map(DtoConverter::asDto)
@@ -109,7 +109,7 @@ public class ResourceUsageService extends Service {
   })
   public List<ResourceDto> getUsedResources(@PathParam("accountId") String accountId)
       throws NotFoundException, ServerException {
-    return resourceUsageManager
+    return resourceManager
         .getUsedResources(accountId)
         .stream()
         .map(DtoConverter::asDto)
@@ -121,16 +121,16 @@ public class ResourceUsageService extends Service {
   @Produces(APPLICATION_JSON)
   @ApiOperation(
     value = "Get resource details for given account",
-    response = ResourceDetailsDto.class
+    response = ResourcesDetailsDto.class
   )
   @ApiResponses({
-    @ApiResponse(code = 200, message = "The resource details successfully fetched"),
+    @ApiResponse(code = 200, message = "The resources details successfully fetched"),
     @ApiResponse(code = 404, message = "Account with specified id was not found"),
     @ApiResponse(code = 500, message = "Internal server error occurred")
   })
-  public ResourceDetailsDto getResourceDetails(
+  public ResourcesDetailsDto getResourceDetails(
       @ApiParam("Account id") @PathParam("accountId") String accountId)
       throws NotFoundException, ServerException {
-    return asDto(resourceUsageManager.getByAccount(accountId));
+    return asDto(resourceManager.getByAccount(accountId));
   }
 }

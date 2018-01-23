@@ -31,7 +31,7 @@ import org.eclipse.che.multiuser.resource.api.exception.NoEnoughResourcesExcepti
 //import org.eclipse.che.multiuser.resource.api.type.RamResourceType;
 import org.eclipse.che.multiuser.resource.api.type.RuntimeResourceType;
 import org.eclipse.che.multiuser.resource.api.type.WorkspaceResourceType;
-import org.eclipse.che.multiuser.resource.api.usage.ResourceUsageManager;
+import org.eclipse.che.multiuser.resource.api.usage.ResourceManager;
 import org.eclipse.che.multiuser.resource.api.usage.tracker.EnvironmentRamCalculator;
 import org.eclipse.che.multiuser.resource.spi.impl.ResourceImpl;
 import org.mockito.Mock;
@@ -55,7 +55,7 @@ public class LimitsCheckingWorkspaceManagerTest {
   @Mock private WorkspaceDao workspaceDao;
   @Mock private EnvironmentRamCalculator environmentRamCalculator;
   @Mock private Account account;
-  @Mock private ResourceUsageManager resourceUsageManager;
+  @Mock private ResourceManager resourceManager;
 
 /*  @Test
   @Test
@@ -64,7 +64,7 @@ public class LimitsCheckingWorkspaceManagerTest {
     //given
     LimitsCheckingWorkspaceManager manager =
         managerBuilder()
-            .setResourceUsageManager(resourceUsageManager)
+            .setResourceManager(resourceManager)
             .setEnvironmentRamCalculator(environmentRamCalculator)
             .build();
 
@@ -78,7 +78,7 @@ public class LimitsCheckingWorkspaceManagerTest {
 
     //then
     verify(environmentRamCalculator).calculate(config.getEnvironments().get(envToStart));
-    verify(resourceUsageManager)
+    verify(resourceManager)
         .checkResourcesAvailability(
             ACCOUNT_ID,
             singletonList(new ResourceImpl(RamResourceType.ID, 3000, RamResourceType.UNIT)));
@@ -90,7 +90,7 @@ public class LimitsCheckingWorkspaceManagerTest {
     //given
     LimitsCheckingWorkspaceManager manager =
         managerBuilder()
-            .setResourceUsageManager(resourceUsageManager)
+            .setResourceManager(resourceManager)
             .setEnvironmentRamCalculator(environmentRamCalculator)
             .build();
 
@@ -104,7 +104,7 @@ public class LimitsCheckingWorkspaceManagerTest {
     //then
     verify(environmentRamCalculator)
         .calculate(config.getEnvironments().get(config.getDefaultEnv()));
-    verify(resourceUsageManager)
+    verify(resourceManager)
         .checkResourcesAvailability(
             ACCOUNT_ID,
             singletonList(new ResourceImpl(RamResourceType.ID, 3000, RamResourceType.UNIT)));
@@ -124,16 +124,16 @@ public class LimitsCheckingWorkspaceManagerTest {
                 singletonList(new ResourceImpl(RamResourceType.ID, 200L, RamResourceType.UNIT)),
                 singletonList(new ResourceImpl(RamResourceType.ID, 3000L, RamResourceType.UNIT)),
                 emptyList()))
-        .when(resourceUsageManager)
+        .when(resourceManager)
         .checkResourcesAvailability(any(), any());
     doReturn(singletonList(new ResourceImpl(RamResourceType.ID, 100L, RamResourceType.UNIT)))
-        .when(resourceUsageManager)
+        .when(resourceManager)
         .getUsedResources(any());
 
     //given
     LimitsCheckingWorkspaceManager manager =
         managerBuilder()
-            .setResourceUsageManager(resourceUsageManager)
+            .setResourceManager(resourceManager)
             .setEnvironmentRamCalculator(environmentRamCalculator)
             .build();
 
@@ -150,13 +150,13 @@ public class LimitsCheckingWorkspaceManagerTest {
       throws Exception {
     //given
     LimitsCheckingWorkspaceManager manager =
-        managerBuilder().setResourceUsageManager(resourceUsageManager).build();
+        managerBuilder().setResourceManager(resourceManager).build();
 
     //when
     manager.checkWorkspaceResourceAvailability(ACCOUNT_ID);
 
     //then
-    verify(resourceUsageManager)
+    verify(resourceManager)
         .checkResourcesAvailability(
             ACCOUNT_ID,
             singletonList(
@@ -171,15 +171,15 @@ public class LimitsCheckingWorkspaceManagerTest {
       throws Exception {
     //given
     doThrow(new NoEnoughResourcesException(emptyList(), emptyList(), emptyList()))
-        .when(resourceUsageManager)
+        .when(resourceManager)
         .checkResourcesAvailability(any(), any());
     doReturn(
             singletonList(
                 new ResourceImpl(WorkspaceResourceType.ID, 5, WorkspaceResourceType.UNIT)))
-        .when(resourceUsageManager)
+        .when(resourceManager)
         .getTotalResources(anyString());
     LimitsCheckingWorkspaceManager manager =
-        managerBuilder().setResourceUsageManager(resourceUsageManager).build();
+        managerBuilder().setResourceManager(resourceManager).build();
 
     //when
     manager.checkWorkspaceResourceAvailability(ACCOUNT_ID);
@@ -190,13 +190,13 @@ public class LimitsCheckingWorkspaceManagerTest {
       throws Exception {
     //given
     LimitsCheckingWorkspaceManager manager =
-        managerBuilder().setResourceUsageManager(resourceUsageManager).build();
+        managerBuilder().setResourceManager(resourceManager).build();
 
     //when
     manager.checkRuntimeResourceAvailability(ACCOUNT_ID);
 
     //then
-    verify(resourceUsageManager)
+    verify(resourceManager)
         .checkResourcesAvailability(
             ACCOUNT_ID,
             singletonList(new ResourceImpl(RuntimeResourceType.ID, 1, RuntimeResourceType.UNIT)));
@@ -210,13 +210,13 @@ public class LimitsCheckingWorkspaceManagerTest {
       throws Exception {
     //given
     doThrow(new NoEnoughResourcesException(emptyList(), emptyList(), emptyList()))
-        .when(resourceUsageManager)
+        .when(resourceManager)
         .checkResourcesAvailability(any(), any());
     doReturn(singletonList(new ResourceImpl(RuntimeResourceType.ID, 5, RuntimeResourceType.UNIT)))
-        .when(resourceUsageManager)
+        .when(resourceManager)
         .getTotalResources(anyString());
     LimitsCheckingWorkspaceManager manager =
-        managerBuilder().setResourceUsageManager(resourceUsageManager).build();
+        managerBuilder().setResourceManager(resourceManager).build();
 
     //when
     manager.checkRuntimeResourceAvailability(ACCOUNT_ID);
@@ -260,7 +260,7 @@ public class LimitsCheckingWorkspaceManagerTest {
 
     private String maxRamPerEnv;
     private EnvironmentRamCalculator environmentRamCalculator;
-    private ResourceUsageManager resourceUsageManager;
+    private ResourceManager resourceManager;
 
     ManagerBuilder() throws ServerException {
       maxRamPerEnv = "1gb";
@@ -276,7 +276,7 @@ public class LimitsCheckingWorkspaceManagerTest {
               null,
               maxRamPerEnv,
               environmentRamCalculator,
-              resourceUsageManager,
+              resourceManager,
               null));
     }
 
@@ -290,8 +290,8 @@ public class LimitsCheckingWorkspaceManagerTest {
       return this;
     }
 
-    ManagerBuilder setResourceUsageManager(ResourceUsageManager resourceUsageManager) {
-      this.resourceUsageManager = resourceUsageManager;
+    ManagerBuilder setResourceManager(ResourceManager resourceManager) {
+      this.resourceManager = resourceManager;
       return this;
     }
   }

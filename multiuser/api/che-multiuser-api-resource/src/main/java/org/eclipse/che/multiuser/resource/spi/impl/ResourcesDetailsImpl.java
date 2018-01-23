@@ -16,22 +16,22 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.eclipse.che.multiuser.resource.model.ProvidedResources;
 import org.eclipse.che.multiuser.resource.model.Resource;
-import org.eclipse.che.multiuser.resource.model.ResourceDetails;
+import org.eclipse.che.multiuser.resource.model.ResourcesDetails;
 
 /** @author Sergii Leschenko */
-public class ResourceDetailsImpl implements ResourceDetails {
+public class ResourcesDetailsImpl implements ResourcesDetails {
   private String accountId;
   private List<ProvidedResourcesImpl> providedResources;
   private List<ResourceImpl> totalResources;
 
-  public ResourceDetailsImpl(ResourceDetails resourceDetails) {
+  public ResourcesDetailsImpl(ResourcesDetails resourcesDetails) {
     this(
-        resourceDetails.getAccountId(),
-        resourceDetails.getProvidedResources(),
-        resourceDetails.getTotalResources());
+        resourcesDetails.getAccountId(),
+        resourcesDetails.getProvidedResources(),
+        resourcesDetails.getTotalResources());
   }
 
-  public ResourceDetailsImpl(
+  public ResourcesDetailsImpl(
       String owner,
       List<? extends ProvidedResources> providedResources,
       List<? extends Resource> totalResources) {
@@ -70,8 +70,8 @@ public class ResourceDetailsImpl implements ResourceDetails {
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (!(o instanceof ResourceDetailsImpl)) return false;
-    ResourceDetailsImpl resourceDetails = (ResourceDetailsImpl) o;
+    if (!(o instanceof ResourcesDetailsImpl)) return false;
+    ResourcesDetailsImpl resourceDetails = (ResourcesDetailsImpl) o;
     return Objects.equal(accountId, resourceDetails.accountId)
         && Objects.equal(providedResources, resourceDetails.providedResources)
         && Objects.equal(totalResources, resourceDetails.totalResources);
@@ -84,7 +84,7 @@ public class ResourceDetailsImpl implements ResourceDetails {
 
   @Override
   public String toString() {
-    return "ResourceDetailsImpl{"
+    return "ResourcesDetailsImpl{"
         + "accountId='"
         + accountId
         + '\''

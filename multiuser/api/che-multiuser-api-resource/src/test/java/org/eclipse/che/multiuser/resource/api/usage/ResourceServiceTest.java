@@ -28,10 +28,10 @@ import java.util.List;
 import org.eclipse.che.api.core.rest.ApiExceptionMapper;
 import org.eclipse.che.dto.server.DtoFactory;
 import org.eclipse.che.multiuser.resource.shared.dto.ProvidedResourcesDto;
-import org.eclipse.che.multiuser.resource.shared.dto.ResourceDetailsDto;
 import org.eclipse.che.multiuser.resource.shared.dto.ResourceDto;
-import org.eclipse.che.multiuser.resource.spi.impl.ResourceDetailsImpl;
+import org.eclipse.che.multiuser.resource.shared.dto.ResourcesDetailsDto;
 import org.eclipse.che.multiuser.resource.spi.impl.ResourceImpl;
+import org.eclipse.che.multiuser.resource.spi.impl.ResourcesDetailsImpl;
 import org.everrest.assured.EverrestJetty;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -41,12 +41,12 @@ import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
 /**
- * Tests for {@link org.eclipse.che.multiuser.resource.api.usage.ResourceUsageService}
+ * Tests for {@link ResourceService}
  *
  * @author Sergii Leschenko
  */
 @Listeners({EverrestJetty.class, MockitoTestNGListener.class})
-public class ResourceUsageServiceTest {
+public class ResourceServiceTest {
   private static final String RESOURCE_TYPE = "test";
   private static final Long RESOURCE_AMOUNT = 1000L;
   private static final String RESOURCE_UNIT = "mb";
@@ -56,9 +56,9 @@ public class ResourceUsageServiceTest {
 
   @Mock ResourceImpl resource;
 
-  @Mock private ResourceUsageManager resourceUsageManager;
+  @Mock private ResourceManager resourceManager;
 
-  @InjectMocks private ResourceUsageService service;
+  @InjectMocks private ResourceService service;
 
   @BeforeMethod
   public void setUp() throws Exception {
@@ -69,7 +69,7 @@ public class ResourceUsageServiceTest {
 
   @Test
   public void shouldReturnTotalResourcesForGivenAccount() throws Exception {
-    doReturn(singletonList(resource)).when(resourceUsageManager).getTotalResources(any());
+    doReturn(singletonList(resource)).when(resourceManager).getTotalResources(any());
 
     final Response response =
         given()
@@ -80,7 +80,7 @@ public class ResourceUsageServiceTest {
             .get(SECURE_PATH + "/resource/account123");
 
     assertEquals(response.statusCode(), 200);
-    verify(resourceUsageManager).getTotalResources(eq("account123"));
+    verify(resourceManager).getTotalResources(eq("account123"));
     final List<ResourceDto> resources = unwrapDtoList(response, ResourceDto.class);
     assertEquals(resources.size(), 1);
     final ResourceDto fetchedResource = resources.get(0);
@@ -91,7 +91,7 @@ public class ResourceUsageServiceTest {
 
   @Test
   public void shouldReturnUsedResourcesForGivenAccount() throws Exception {
-    doReturn(singletonList(resource)).when(resourceUsageManager).getUsedResources(any());
+    doReturn(singletonList(resource)).when(resourceManager).getUsedResources(any());
 
     final Response response =
         given()
@@ -102,7 +102,7 @@ public class ResourceUsageServiceTest {
             .get(SECURE_PATH + "/resource/account123/used");
 
     assertEquals(response.statusCode(), 200);
-    verify(resourceUsageManager).getUsedResources(eq("account123"));
+    verify(resourceManager).getUsedResources(eq("account123"));
     final List<ResourceDto> resources = unwrapDtoList(response, ResourceDto.class);
     assertEquals(resources.size(), 1);
     final ResourceDto fetchedResource = resources.get(0);
@@ -113,7 +113,7 @@ public class ResourceUsageServiceTest {
 
   @Test
   public void shouldReturnAvailableResourcesForGivenAccount() throws Exception {
-    doReturn(singletonList(resource)).when(resourceUsageManager).getAvailableResources(any());
+    doReturn(singletonList(resource)).when(resourceManager).getAvailableResources(any());
 
     final Response response =
         given()
@@ -124,7 +124,7 @@ public class ResourceUsageServiceTest {
             .get(SECURE_PATH + "/resource/account123/available");
 
     assertEquals(response.statusCode(), 200);
-    verify(resourceUsageManager).getAvailableResources(eq("account123"));
+    verify(resourceManager).getAvailableResources(eq("account123"));
     final List<ResourceDto> resources = unwrapDtoList(response, ResourceDto.class);
     assertEquals(resources.size(), 1);
     final ResourceDto fetchedResource = resources.get(0);
@@ -138,8 +138,8 @@ public class ResourceUsageServiceTest {
     // given
     final ResourceDto testResource =
         DtoFactory.newDto(ResourceDto.class).withType("test").withAmount(1234).withUnit("mb");
-    final ResourceDetailsDto toFetch =
-        DtoFactory.newDto(ResourceDetailsDto.class)
+    final ResourcesDetailsDto toFetch =
+        DtoFactory.newDto(ResourcesDetailsDto.class)
             .withAccountId("account123")
             .withProvidedResources(
                 singletonList(
@@ -153,8 +153,8 @@ public class ResourceUsageServiceTest {
             .withTotalResources(singletonList(testResource));
 
     // when
-    when(resourceUsageManager.getByAccount(eq("account123")))
-        .thenReturn(new ResourceDetailsImpl(toFetch));
+    when(resourceManager.getByAccount(eq("account123")))
+        .thenReturn(new ResourcesDetailsImpl(toFetch));
 
     // then
     final Response response =
@@ -167,11 +167,11 @@ public class ResourceUsageServiceTest {
             .statusCode(200)
             .get(SECURE_PATH + "/resource/details/account123");
 
-    final ResourceDetailsDto resourceDetailsDto =
+    final ResourcesDetailsDto resourceDetailsDto =
         DtoFactory.getInstance()
-            .createDtoFromJson(response.body().print(), ResourceDetailsDto.class);
+            .createDtoFromJson(response.body().print(), ResourcesDetailsDto.class);
     assertEquals(resourceDetailsDto, toFetch);
-    verify(resourceUsageManager).getByAccount("account123");
+    verify(resourceManager).getByAccount("account123");
   }
 
   private static <T> List<T> unwrapDtoList(Response response, Class<T> dtoClass) {

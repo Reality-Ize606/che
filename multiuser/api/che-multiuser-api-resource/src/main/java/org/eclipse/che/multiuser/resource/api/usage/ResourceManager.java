@@ -29,16 +29,16 @@ import org.eclipse.che.multiuser.resource.api.ResourcesProvider;
 import org.eclipse.che.multiuser.resource.api.exception.NoEnoughResourcesException;
 import org.eclipse.che.multiuser.resource.model.ProvidedResources;
 import org.eclipse.che.multiuser.resource.model.Resource;
-import org.eclipse.che.multiuser.resource.model.ResourceDetails;
-import org.eclipse.che.multiuser.resource.spi.impl.ResourceDetailsImpl;
+import org.eclipse.che.multiuser.resource.model.ResourcesDetails;
+import org.eclipse.che.multiuser.resource.spi.impl.ResourcesDetailsImpl;
 
 /**
- * Facade for resources using related operations.
+ * Facade for resources related operations.
  *
  * @author Sergii Leschenko
  */
 @Singleton
-public class ResourceUsageManager {
+public class ResourceManager {
   private final ResourceAggregator resourceAggregator;
   private final Set<ResourcesProvider> resourcesProviders;
   private final Set<ResourceUsageTracker> usageTrackers;
@@ -47,7 +47,7 @@ public class ResourceUsageManager {
   private final DefaultAvailableResourcesProvider defaultAvailableResourcesProvider;
 
   @Inject
-  public ResourceUsageManager(
+  public ResourceManager(
       ResourceAggregator resourceAggregator,
       Set<ResourcesProvider> resourcesProviders,
       Set<ResourceUsageTracker> usageTrackers,
@@ -138,7 +138,7 @@ public class ResourceUsageManager {
    * @throws NotFoundException when account with specified id was not found
    * @throws ServerException when some exception occurs
    */
-  public ResourceDetails getByAccount(String accountId) throws NotFoundException, ServerException {
+  public ResourcesDetails getByAccount(String accountId) throws NotFoundException, ServerException {
     final List<ProvidedResources> resources = new ArrayList<>();
     for (ResourcesProvider resourcesProvider : resourcesProviders) {
       resources.addAll(resourcesProvider.getResources(accountId));
@@ -150,7 +150,7 @@ public class ResourceUsageManager {
             .flatMap(providedResources -> providedResources.getResources().stream())
             .collect(Collectors.toList());
 
-    return new ResourceDetailsImpl(
+    return new ResourcesDetailsImpl(
         accountId,
         resources,
         new ArrayList<>(resourceAggregator.aggregateByType(allResources).values()));

@@ -12,29 +12,29 @@ package org.eclipse.che.multiuser.resource.shared.dto;
 
 import java.util.List;
 import org.eclipse.che.dto.shared.DTO;
-import org.eclipse.che.multiuser.resource.model.ResourceDetails;
+import org.eclipse.che.multiuser.resource.model.ResourcesDetails;
 
 /** @author Sergii Leschenko */
 @DTO
-public interface ResourceDetailsDto extends ResourceDetails {
+public interface ResourcesDetailsDto extends ResourcesDetails {
   @Override
   String getAccountId();
 
   void setAccountId(String accountId);
 
-  ResourceDetailsDto withAccountId(String accountId);
+  ResourcesDetailsDto withAccountId(String accountId);
 
   @Override
   List<ProvidedResourcesDto> getProvidedResources();
 
   void setProvidedResources(List<ProvidedResourcesDto> providedResources);
 
-  ResourceDetailsDto withProvidedResources(List<ProvidedResourcesDto> providedResources);
+  ResourcesDetailsDto withProvidedResources(List<ProvidedResourcesDto> providedResources);
 
   @Override
   List<ResourceDto> getTotalResources();
 
   void setTotalResources(List<ResourceDto> totalResources);
 
-  ResourceDetailsDto withTotalResources(List<ResourceDto> totalResources);
+  ResourcesDetailsDto withTotalResources(List<ResourceDto> totalResources);
 }

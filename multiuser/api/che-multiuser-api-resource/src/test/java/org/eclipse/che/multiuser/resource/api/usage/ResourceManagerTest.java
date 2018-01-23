@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2012-2018 Red Hat, Inc.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *   Red Hat, Inc. - initial API and implementation
+ */
 package org.eclipse.che.multiuser.resource.api.usage;
 
 import static java.util.Collections.singletonList;
@@ -28,7 +38,7 @@ import org.eclipse.che.multiuser.resource.api.ResourceUsageTracker;
 import org.eclipse.che.multiuser.resource.api.ResourcesProvider;
 import org.eclipse.che.multiuser.resource.model.ProvidedResources;
 import org.eclipse.che.multiuser.resource.model.Resource;
-import org.eclipse.che.multiuser.resource.model.ResourceDetails;
+import org.eclipse.che.multiuser.resource.model.ResourcesDetails;
 import org.eclipse.che.multiuser.resource.spi.impl.ProvidedResourcesImpl;
 import org.eclipse.che.multiuser.resource.spi.impl.ResourceImpl;
 import org.mockito.Mock;
@@ -39,12 +49,12 @@ import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
 /**
- * Tests {@link ResourceUsageManager}.
+ * Tests {@link ResourceManager}.
  *
  * @author Anton Korneta
  */
 @Listeners(MockitoTestNGListener.class)
-public class ResourceUsageManagerTest {
+public class ResourceManagerTest {
 
   private static final String ACCOUNT_ID = "testOrg359";
 
@@ -57,12 +67,12 @@ public class ResourceUsageManagerTest {
   @Mock private ProvidedResources providedResources;
   @Mock private Account account;
 
-  private ResourceUsageManager resourceUsageManager;
+  private ResourceManager resourceManager;
 
   @BeforeMethod
   public void setup() throws Exception {
-    resourceUsageManager =
-        new ResourceUsageManager(
+    resourceManager =
+        new ResourceManager(
             resourceAggregator,
             Collections.singleton(resourcesProvider),
             Collections.singleton(usageTrackers),
@@ -90,7 +100,7 @@ public class ResourceUsageManagerTest {
             new ResourceImpl("RAM", 2048, "mb"), new ResourceImpl("timeout", 15, "minutes"));
     doReturn(res).when(providedResources).getResources();
 
-    List<? extends Resource> actual = resourceUsageManager.getTotalResources(ACCOUNT_ID);
+    List<? extends Resource> actual = resourceManager.getTotalResources(ACCOUNT_ID);
 
     assertEquals(actual.size(), res.size());
     assertTrue(actual.containsAll(res));
@@ -100,14 +110,14 @@ public class ResourceUsageManagerTest {
   public void testThrowsNotFoundExceptionWhenResourceForGivenAccountNotFound() throws Exception {
     doThrow(NotFoundException.class).when(resourcesProvider).getResources(ACCOUNT_ID);
 
-    resourceUsageManager.getTotalResources(ACCOUNT_ID);
+    resourceManager.getTotalResources(ACCOUNT_ID);
   }
 
   @Test(expectedExceptions = ServerException.class)
   public void doThrowServerExceptionWhenErrorOccursWhileFetchingResources() throws Exception {
     doThrow(ServerException.class).when(resourcesProvider).getResources(ACCOUNT_ID);
 
-    resourceUsageManager.getTotalResources(ACCOUNT_ID);
+    resourceManager.getTotalResources(ACCOUNT_ID);
   }
 
   @Test
@@ -118,7 +128,7 @@ public class ResourceUsageManagerTest {
         .when(accountTypeToAvailableResourcesProvider)
         .getAvailableResources(ACCOUNT_ID);
 
-    List<? extends Resource> actual = resourceUsageManager.getAvailableResources(ACCOUNT_ID);
+    List<? extends Resource> actual = resourceManager.getAvailableResources(ACCOUNT_ID);
 
     assertEquals(actual.size(), availableResources.size());
     assertTrue(actual.containsAll(availableResources));
@@ -128,7 +138,7 @@ public class ResourceUsageManagerTest {
   public void testThrowsNotFoundExceptionWhenAccountWithGivenIdNotFound() throws Exception {
     doThrow(NotFoundException.class).when(accountManager).getById(ACCOUNT_ID);
 
-    resourceUsageManager.getAvailableResources(ACCOUNT_ID);
+    resourceManager.getAvailableResources(ACCOUNT_ID);
   }
 
   @Test(expectedExceptions = NotFoundException.class)
@@ -138,7 +148,7 @@ public class ResourceUsageManagerTest {
         .when(accountTypeToAvailableResourcesProvider)
         .getAvailableResources(ACCOUNT_ID);
 
-    resourceUsageManager.getAvailableResources(ACCOUNT_ID);
+    resourceManager.getAvailableResources(ACCOUNT_ID);
   }
 
   @Test(expectedExceptions = ServerException.class)
@@ -146,7 +156,7 @@ public class ResourceUsageManagerTest {
       throws Exception {
     doThrow(ServerException.class).when(accountManager).getById(ACCOUNT_ID);
 
-    resourceUsageManager.getAvailableResources(ACCOUNT_ID);
+    resourceManager.getAvailableResources(ACCOUNT_ID);
   }
 
   @Test(
@@ -157,7 +167,7 @@ public class ResourceUsageManagerTest {
     when(resourcesProvider.getResources(eq(ACCOUNT_ID)))
         .thenThrow(new NotFoundException("Account with specified id was not found"));
 
-    resourceUsageManager.getByAccount(ACCOUNT_ID);
+    resourceManager.getByAccount(ACCOUNT_ID);
   }
 
   @Test
@@ -173,16 +183,16 @@ public class ResourceUsageManagerTest {
     when(resourceAggregator.aggregateByType(any()))
         .thenReturn(ImmutableMap.of(reducedResource.getType(), reducedResource));
 
-    final ResourceDetails resourceDetails = resourceUsageManager.getByAccount(ACCOUNT_ID);
+    final ResourcesDetails resourcesDetails = resourceManager.getByAccount(ACCOUNT_ID);
 
     verify(resourcesProvider).getResources(eq(ACCOUNT_ID));
     verify(resourceAggregator).aggregateByType(eq(singletonList(testResource)));
 
-    assertEquals(resourceDetails.getAccountId(), ACCOUNT_ID);
-    assertEquals(resourceDetails.getProvidedResources().size(), 1);
-    assertEquals(resourceDetails.getProvidedResources().get(0), providedResource);
+    assertEquals(resourcesDetails.getAccountId(), ACCOUNT_ID);
+    assertEquals(resourcesDetails.getProvidedResources().size(), 1);
+    assertEquals(resourcesDetails.getProvidedResources().get(0), providedResource);
 
-    assertEquals(resourceDetails.getTotalResources().size(), 1);
-    assertEquals(resourceDetails.getTotalResources().get(0), reducedResource);
+    assertEquals(resourcesDetails.getTotalResources().size(), 1);
+    assertEquals(resourcesDetails.getTotalResources().get(0), reducedResource);
   }
 }

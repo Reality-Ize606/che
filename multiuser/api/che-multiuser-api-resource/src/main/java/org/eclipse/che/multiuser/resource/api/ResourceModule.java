@@ -23,7 +23,7 @@ import org.eclipse.che.multiuser.resource.api.type.ResourceType;
 import org.eclipse.che.multiuser.resource.api.type.RuntimeResourceType;
 import org.eclipse.che.multiuser.resource.api.type.TimeoutResourceType;
 import org.eclipse.che.multiuser.resource.api.type.WorkspaceResourceType;
-import org.eclipse.che.multiuser.resource.api.usage.ResourceUsageService;
+import org.eclipse.che.multiuser.resource.api.usage.ResourceService;
 import org.eclipse.che.multiuser.resource.api.usage.tracker.RamResourceUsageTracker;
 import org.eclipse.che.multiuser.resource.api.usage.tracker.RuntimeResourceUsageTracker;
 import org.eclipse.che.multiuser.resource.api.usage.tracker.WorkspaceResourceUsageTracker;
@@ -35,7 +35,7 @@ import org.eclipse.che.multiuser.resource.spi.jpa.JpaFreeResourcesLimitDao;
 public class ResourceModule extends AbstractModule {
   @Override
   protected void configure() {
-    bind(ResourceUsageService.class);
+    bind(ResourceService.class);
 
     bind(FreeResourcesLimitService.class);
     bind(FreeResourcesLimitDao.class).to(JpaFreeResourcesLimitDao.class);
