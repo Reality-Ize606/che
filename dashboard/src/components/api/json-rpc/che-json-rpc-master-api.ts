@@ -213,7 +213,7 @@ export class CheJsonRpcMasterApi {
    */
   private subscribe(channel: MasterChannels, _scope: MasterScopes, id: string, callback: Function): void {
     let method: string = channel.toString();
-    let masterScope: string = _scope.toString()
+    let masterScope: string = _scope.toString();
     let params = {method: method, scope: {}};
     params.scope[masterScope] = id;
     this.cheJsonRpcApi.subscribe(SUBSCRIBE, method, callback, params);
@@ -229,7 +229,7 @@ export class CheJsonRpcMasterApi {
    */
   private unsubscribe(channel: MasterChannels, _scope: MasterScopes, id: string, callback: Function): void {
     let method: string = channel.toString();
-    let masterScope: string = _scope.toString()
+    let masterScope: string = _scope.toString();
     let params = {method: method, scope: {}};
     params.scope[masterScope] = id;
     this.cheJsonRpcApi.unsubscribe(UNSUBSCRIBE, method, callback, params);

@@ -90,7 +90,7 @@ export class CheTeamEventsManager implements che.api.ICheTeamEventsManager {
         default:
           break;
       }
-    })
+    });
   }
 
   /**
