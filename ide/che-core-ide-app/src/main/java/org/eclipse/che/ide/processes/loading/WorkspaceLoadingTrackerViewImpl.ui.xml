@@ -18,31 +18,26 @@
     <ui:with field="machineResources" type="org.eclipse.che.ide.machine.MachineResources"/>
     <ui:with field="resources" type="org.eclipse.che.ide.Resources" />
 
-    <ui:style>
+    <ui:style  src="org/eclipse/che/ide/api/ui/style.css">
 
-        @def workspaceStatusBackgroundColor #191c28;
-        @def workspaceStatusDelimiterColor rgba(160, 169, 183, 0.2);
-        @def workspaceStatusMachineOutputsHyperlink #4973c1;
-
-        @def workspaceStatusWaitingWorkspaceSection #f0c530;
-        @def workspaceStatusWorkspaceStartedSection #3aa461;
-        @def workspaceStatusWorkspaceStoppedSection #f0c530;
-        @def workspaceStatusWorkspaceFailedSection red;
-
-        @def workspaceStatusMachineStateStarting #4973c1;
-        @def workspaceStatusMachineStateRunning #3aa461;
-        @def workspaceStatusMachineStateStopped #adadad;
-        @def workspaceStatusMachineStateFailed red;
-
-        @def workspaceStatusInstallerStateStarting #4973c1;
-        @def workspaceStatusInstallerStateRunning #4973c1;
-        @def workspaceStatusInstallerStateFailed red;
-
-        @def workspaceStatusInstallerStatusStarting #4973c1;
-        @def workspaceStatusInstallerStatusRunning #3aa461;
-        @def workspaceStatusInstallerStatusFailed red;
-
-        @def workspaceStatusErrorMessage red;
+        @eval workspaceStatusBackgroundColor org.eclipse.che.ide.api.theme.Style.theme.workspaceStatusBackgroundColor();
+        @eval workspaceStatusDelimiterColor org.eclipse.che.ide.api.theme.Style.theme.workspaceStatusDelimiterColor();
+        @eval workspaceStatusMachineOutputsHyperlink org.eclipse.che.ide.api.theme.Style.theme.workspaceStatusMachineOutputsHyperlink();
+        @eval workspaceStatusWaitingWorkspaceSection org.eclipse.che.ide.api.theme.Style.theme.workspaceStatusWaitingWorkspaceSection();
+        @eval workspaceStatusWorkspaceStartedSection org.eclipse.che.ide.api.theme.Style.theme.workspaceStatusWorkspaceStartedSection();
+        @eval workspaceStatusWorkspaceStoppedSection org.eclipse.che.ide.api.theme.Style.theme.workspaceStatusWorkspaceStoppedSection();
+        @eval workspaceStatusWorkspaceFailedSection org.eclipse.che.ide.api.theme.Style.theme.workspaceStatusWorkspaceFailedSection();
+        @eval workspaceStatusMachineStateStarting org.eclipse.che.ide.api.theme.Style.theme.workspaceStatusMachineStateStarting();
+        @eval workspaceStatusMachineStateRunning org.eclipse.che.ide.api.theme.Style.theme.workspaceStatusMachineStateRunning();
+        @eval workspaceStatusMachineStateStopped org.eclipse.che.ide.api.theme.Style.theme.workspaceStatusMachineStateStopped();
+        @eval workspaceStatusMachineStateFailed org.eclipse.che.ide.api.theme.Style.theme.workspaceStatusMachineStateFailed();
+        @eval workspaceStatusInstallerStateStarting org.eclipse.che.ide.api.theme.Style.theme.workspaceStatusInstallerStateStarting();
+        @eval workspaceStatusInstallerStateRunning org.eclipse.che.ide.api.theme.Style.theme.workspaceStatusInstallerStateRunning();
+        @eval workspaceStatusInstallerStateFailed org.eclipse.che.ide.api.theme.Style.theme.workspaceStatusInstallerStateFailed();
+        @eval workspaceStatusInstallerStatusStarting org.eclipse.che.ide.api.theme.Style.theme.workspaceStatusInstallerStatusStarting();
+        @eval workspaceStatusInstallerStatusRunning org.eclipse.che.ide.api.theme.Style.theme.workspaceStatusInstallerStatusRunning();
+        @eval workspaceStatusInstallerStatusFailed org.eclipse.che.ide.api.theme.Style.theme.workspaceStatusInstallerStatusFailed();
+        @eval workspaceStatusErrorMessage org.eclipse.che.ide.api.theme.Style.theme.workspaceStatusErrorMessage();
 
         .panel {
             overflow: auto;
@@ -61,6 +56,7 @@
 
         .table > tbody > tr > td {
             font-family: "Open Sans", sans-serif;
+            color: outputFontColor;
             font-size: 9pt;
             line-height: 13px;
             white-space: pre;

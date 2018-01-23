@@ -134,7 +134,17 @@ public class DarkTheme implements Theme {
   }
 
   @Override
+  public String tabIconColor() {
+    return "#AAAAAA";
+  }
+
+  @Override
   public String activeTabIconColor() {
+    return "#FFFFFF";
+  }
+
+  @Override
+  public String hoveredTabIconColor() {
     return "#FFFFFF";
   }
 
@@ -269,6 +279,16 @@ public class DarkTheme implements Theme {
 
   @Override
   public String getDropdownListBackground() {
+    return "#242a3a";
+  }
+
+  @Override
+  public String getDropdownListExecLabelColor() {
+    return "#4eabff";
+  }
+
+  @Override
+  public String getDropdownListExecLabelBackground() {
     return "#242a3a";
   }
 
@@ -938,6 +958,11 @@ public class DarkTheme implements Theme {
   }
 
   @Override
+  public String consolesToolbarToggledButtonBorderColor() {
+    return "rgba(0, 0, 0, 0.5)";
+  }
+
+  @Override
   public String processTreeDevLabel() {
     return "white";
   }
@@ -1409,7 +1434,7 @@ public class DarkTheme implements Theme {
 
   @Override
   public String projectExplorerSelectedRowBackground() {
-    return "rgba(215, 215, 215, 0.2)";
+    return "rgba(84, 92, 101, 0.2)";
   }
 
   @Override
@@ -1865,4 +1890,99 @@ public class DarkTheme implements Theme {
   public String projectExplorerPlaceholderRowColor() {
     return "#333846";
   }
+
+   @Override
+    public String workspaceStatusBackgroundColor() {
+      return "#191c28";
+    }
+
+    @Override
+    public String workspaceStatusDelimiterColor() {
+      return "rgba(160, 169, 183, 0.2)";
+    }
+
+    @Override
+    public String workspaceStatusMachineOutputsHyperlink() {
+      return "#4973c1";
+    }
+
+    @Override
+    public String workspaceStatusWaitingWorkspaceSection() {
+      return "#f0c530";
+    }
+
+    @Override
+    public String workspaceStatusWorkspaceStartedSection() {
+      return "#3aa461";
+    }
+
+    @Override
+    public String workspaceStatusWorkspaceStoppedSection() {
+      return "#f0c530";
+    }
+
+    @Override
+    public String workspaceStatusWorkspaceFailedSection() {
+      return "red";
+    }
+
+    @Override
+    public String workspaceStatusMachineStateStarting() {
+      return "#4973c1";
+    }
+
+    @Override
+    public String workspaceStatusMachineStateRunning() {
+      return "#3aa461";
+    }
+
+    @Override
+    public String workspaceStatusMachineStateStopped() {
+      return "#adadad";
+    }
+
+    @Override
+    public String workspaceStatusMachineStateFailed() {
+      return "red";
+    }
+
+    @Override
+    public String workspaceStatusInstallerStateStarting() {
+      return "#4973c1";
+    }
+
+    @Override
+    public String workspaceStatusInstallerStateRunning() {
+      return "#4973c1";
+    }
+
+    @Override
+    public String workspaceStatusInstallerStateFailed() {
+      return "red";
+    }
+
+    @Override
+    public String workspaceStatusInstallerStatusStarting() {
+      return "#4973c1";
+    }
+
+    @Override
+    public String workspaceStatusInstallerStatusRunning() {
+      return "#3aa461";
+    }
+
+    @Override
+    public String workspaceStatusInstallerStatusFailed() {
+      return "red";
+    }
+
+    @Override
+    public String workspaceStatusErrorMessage() {
+      return "red";
+    }
+
+    @Override
+    public String noToolbarPanelColor() {
+      return "#1b1e2b";
+    }
 }
